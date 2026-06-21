@@ -4,32 +4,32 @@
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot\..
 
-if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-	Write-Host "GitHub CLI (gh) is not installed. Install: winget install GitHub.cli" -ForegroundColor Red
+$gh = "C:\Program Files\GitHub CLI\gh.exe"
+if (-not (Test-Path $gh)) {
+	$ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+	if ($ghCmd) {
+		$gh = $ghCmd.Source
+	} else {
+		Write-Host "GitHub CLI not found. Install: winget install GitHub.cli" -ForegroundColor Red
+		exit 1
+	}
+}
+
+& $gh auth status 2>&1 | Out-Null
+if ($LASTEXITCODE -ne 0) {
+	Write-Host "Not logged in to GitHub. Run first:" -ForegroundColor Yellow
+	Write-Host "  & `"C:\Program Files\GitHub CLI\gh.exe`" auth login" -ForegroundColor Cyan
 	exit 1
 }
 
-$auth = gh auth status 2>&1
-if ($LASTEXITCODE -ne 0) {
-	Write-Host "Not logged in to GitHub. Run this first in your terminal:" -ForegroundColor Yellow
-	Write-Host "  gh auth login" -ForegroundColor Cyan
-	Write-Host "Choose: GitHub.com -> HTTPS -> Login with browser" -ForegroundColor Gray
-	exit 1
-}
+Write-Host "Creating public repo and pushing..." -ForegroundColor Green
 
-Write-Host "Creating public repo Nikolaos-Mantas/withdrawal-button (if missing) and pushing..." -ForegroundColor Green
-
-# Create repo on GitHub and push (works with existing local git + commits).
-gh repo create Nikolaos-Mantas/withdrawal-button --public --source=. --remote=origin --push
+& $gh repo create Nikolaos-Mantas/withdrawal-button --public --source=. --remote=origin --push
 
 if ($LASTEXITCODE -ne 0) {
-	Write-Host "If repo already exists, try: git push -u origin main" -ForegroundColor Yellow
+	Write-Host "Trying git push..." -ForegroundColor Yellow
 	git push -u origin main
 }
 
 git push origin v3.0.0 2>$null
-if ($LASTEXITCODE -eq 0) {
-	Write-Host "Tag v3.0.0 pushed." -ForegroundColor Green
-}
-
-Write-Host "Done. Open: https://github.com/Nikolaos-Mantas/withdrawal-button" -ForegroundColor Green
+Write-Host "Done: https://github.com/Nikolaos-Mantas/withdrawal-button" -ForegroundColor Green
