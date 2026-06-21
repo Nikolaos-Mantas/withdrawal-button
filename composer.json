@@ -1,0 +1,26 @@
+{
+	"name": "nmantas/withdrawal-button",
+	"description": "WordPress withdrawal request form plugin",
+	"version": "3.0.0",
+	"type": "wordpress-plugin",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Nikolaos Mantas",
+			"email": "info@nmantas.eu",
+			"homepage": "https://nmantas.eu"
+		}
+	],
+	"require": {
+		"php": ">=7.4"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.6",
+		"gettext/gettext": "5.7"
+	},
+	"scripts": {
+		"test": "phpunit",
+		"translations": "php bin/compile-translations.php",
+		"lint": "find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l"
+	}
+}

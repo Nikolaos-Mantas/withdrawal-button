@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "wb/withdrawal-form",
+	"version": "1.0.0",
+	"title": "Withdrawal Form",
+	"category": "widgets",
+	"icon": "undo",
+	"description": "Display the withdrawal request form.",
+	"keywords": ["withdrawal", "return", "form", "refund", "cancel"],
+	"textdomain": "withdrawal-button",
+	"supports": {
+		"html": false,
+		"multiple": false
+	},
+	"editorScript": "file:./editor.js"
+}

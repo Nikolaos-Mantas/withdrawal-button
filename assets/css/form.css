@@ -1,0 +1,135 @@
+.wb-withdrawal-wrap {
+	max-width: 640px;
+	font-family: var(--wb-font, inherit);
+	color: var(--wb-text, #333);
+}
+
+.wb-withdrawal-wrap label {
+	display: block;
+	font-weight: 600;
+	margin: 14px 0 4px;
+}
+
+.wb-withdrawal-wrap input[type="text"],
+.wb-withdrawal-wrap input[type="email"],
+.wb-withdrawal-wrap select,
+.wb-withdrawal-wrap textarea {
+	width: 100%;
+	padding: 9px 12px;
+	border: 1px solid var(--wb-border, #ccc);
+	border-radius: var(--wb-radius, 5px);
+	box-sizing: border-box;
+	background: var(--wb-bg, #fff);
+	color: var(--wb-text, #333);
+}
+
+.wb-checkbox {
+	margin: 14px 0;
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+}
+
+.wb-checkbox input {
+	margin-top: 4px;
+}
+
+.wb-checkbox label {
+	font-weight: 400;
+	margin: 0;
+}
+
+.wb-btn {
+	display: inline-block;
+	margin-top: 18px;
+	padding: 12px 26px;
+	background: var(--wb-button, #b32d2e);
+	color: #fff !important;
+	border: none;
+	border-radius: var(--wb-radius, 5px);
+	font-size: 16px;
+	font-weight: 700;
+	cursor: pointer;
+	text-decoration: none;
+	transition: background 0.2s ease;
+}
+
+.wb-btn:hover {
+	background: var(--wb-button-hover, #8f2425);
+}
+
+.wb-btn-secondary {
+	background: #666;
+	margin-left: 10px;
+}
+
+.wb-btn-secondary:hover {
+	background: #555;
+}
+
+.wb-error {
+	background: #fdecea;
+	border: 1px solid var(--wb-error, #b32d2e);
+	color: #7a1f20;
+	padding: 12px;
+	border-radius: var(--wb-radius, 5px);
+	margin-bottom: 15px;
+}
+
+.wb-error ul {
+	margin: 0;
+	padding-left: 18px;
+}
+
+.wb-success {
+	background: #e8f5e9;
+	border: 1px solid var(--wb-success, #2e7d32);
+	color: #1b5e20;
+	padding: 16px;
+	border-radius: var(--wb-radius, 5px);
+}
+
+.wb-summary {
+	background: #f7f7f7;
+	border: 1px solid var(--wb-border, #ddd);
+	border-radius: var(--wb-radius, 5px);
+	padding: 16px;
+	margin: 15px 0;
+}
+
+.wb-summary dt {
+	font-weight: 700;
+	margin-top: 8px;
+}
+
+.wb-summary dd {
+	margin: 0;
+}
+
+.wb-required {
+	color: var(--wb-error, #b32d2e);
+}
+
+.wb-hp {
+	position: absolute;
+	left: -9999px;
+	height: 0;
+	overflow: hidden;
+}
+
+.wb-inline-form {
+	display: inline;
+}
+
+.wb-captcha {
+	margin: 16px 0;
+}
+
+.wb-title {
+	color: var(--wb-primary, #b32d2e);
+}
+
+.wb-order-hint {
+	font-size: 13px;
+	color: #666;
+}
