@@ -24,6 +24,8 @@ class WB_Install {
 			wp_schedule_event( time(), 'daily', 'wb_daily_cleanup' );
 		}
 
+		WB_Telemetry::schedule();
+
 		update_option( 'wb_version', WB_VERSION );
 	}
 
@@ -32,6 +34,7 @@ class WB_Install {
 	 */
 	public static function deactivate() {
 		wp_clear_scheduled_hook( 'wb_daily_cleanup' );
+		WB_Telemetry::unschedule();
 	}
 
 	/**
@@ -89,6 +92,20 @@ class WB_Install {
 			KEY status_code (status_code)
 		) {$charset};";
 		dbDelta( $log_sql );
+
+		$audit_table = WB_Audit_Log::table_name();
+		$audit_sql   = "CREATE TABLE {$audit_table} (
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			logged_at DATETIME NOT NULL,
+			user_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+			action VARCHAR(50) NOT NULL DEFAULT '',
+			context TEXT NULL,
+			ip_address VARCHAR(45) NOT NULL DEFAULT '',
+			PRIMARY KEY  (id),
+			KEY logged_at (logged_at),
+			KEY action (action)
+		) {$charset};";
+		dbDelta( $audit_sql );
 	}
 
 	/**
@@ -134,5 +151,6 @@ class WB_Install {
 		}
 
 		WB_REST_Logger::cleanup_old_logs();
+		WB_Audit_Log::cleanup_old();
 	}
 }

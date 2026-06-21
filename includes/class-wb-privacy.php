@@ -365,6 +365,10 @@ class WB_Privacy {
 			$lines[] = '<p>' . esc_html__( 'Anti-spam protection may use third-party services (Google reCAPTCHA or Cloudflare Turnstile) that process IP addresses for security.', WB_TEXT_DOMAIN ) . '</p>';
 		}
 
+		if ( ! empty( $settings['telemetry_enabled'] ) ) {
+			$lines[] = '<p>' . esc_html__( 'Optional anonymous plugin usage statistics may be sent weekly (plugin version, feature flags, request counts). No personal data is included.', WB_TEXT_DOMAIN ) . '</p>';
+		}
+
 		$lines[] = '<p>' . esc_html__( 'You may request export or erasure of your data via the site administrator or WordPress privacy tools where available.', WB_TEXT_DOMAIN ) . '</p>';
 
 		return implode( '', $lines );

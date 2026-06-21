@@ -251,6 +251,7 @@ class WB_Import_Export {
 			);
 		}
 
+		$data = isset( $decoded['data'] ) && is_array( $decoded['data'] ) ? $decoded['data'] : $decoded;
 		$clean = WB_Settings::merge_import( $data );
 
 		if ( ! $merge ) {

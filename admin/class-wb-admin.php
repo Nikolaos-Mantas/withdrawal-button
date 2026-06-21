@@ -276,23 +276,30 @@ class WB_Admin {
 			wp_die( esc_html__( 'Invalid export request.', WB_TEXT_DOMAIN ) );
 		}
 
+		global $wpdb;
+		$request_count = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . wb_table_name() );
+
 		switch ( $type ) {
 			case 'csv':
+				WB_Audit_Log::log( 'export_requests_csv', array( 'count' => $request_count ) );
 				$content = WB_Import_Export::export_requests( 'csv' );
 				WB_Import_Export::send_download_headers( 'withdrawal-requests.csv', 'text/csv; charset=utf-8' );
 				echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				exit;
 			case 'json':
+				WB_Audit_Log::log( 'export_requests_json', array( 'count' => $request_count ) );
 				$content = WB_Import_Export::export_requests( 'json' );
 				WB_Import_Export::send_download_headers( 'withdrawal-requests.json', 'application/json; charset=utf-8' );
 				echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				exit;
 			case 'settings':
+				WB_Audit_Log::log( 'export_settings', array() );
 				$content = WB_Import_Export::export_settings();
 				WB_Import_Export::send_download_headers( 'wb-settings.json', 'application/json; charset=utf-8' );
 				echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				exit;
 			case 'rest-logs':
+				WB_Audit_Log::log( 'export_rest_logs', array() );
 				$content = WB_Import_Export::export_rest_logs();
 				WB_Import_Export::send_download_headers( 'wb-rest-logs.json', 'application/json; charset=utf-8' );
 				echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -331,11 +338,23 @@ class WB_Admin {
 				$result['skipped']
 			);
 			echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p>' . esc_html( $msg ) . '</p></div>';
+			if ( $result['success'] || $result['imported'] > 0 ) {
+				WB_Audit_Log::log(
+					'import_requests',
+					array(
+						'imported' => $result['imported'],
+						'skipped'  => $result['skipped'],
+					)
+				);
+			}
 		} elseif ( 'settings' === $type ) {
 			$merge  = empty( $_POST['wb_import_merge'] ) ? false : true;
 			$result = WB_Import_Export::import_settings( $tmp, $merge );
 			$class  = $result['success'] ? 'notice-success' : 'notice-error';
 			echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p>' . esc_html( $result['message'] ) . '</p></div>';
+			if ( $result['success'] ) {
+				WB_Audit_Log::log( 'import_settings', array( 'merge' => $merge ? 1 : 0 ) );
+			}
 		}
 	}
 

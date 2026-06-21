@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Withdrawal Button
  * Description: Withdrawal request form with admin management and email notifications. Shortcode: [withdrawal_form]
- * Version:     3.2.2
+ * Version:     3.3.0
  * Author:      Nikolaos Mantas
  * Author URI:  https://nmantas.eu
  * Plugin URI:  https://github.com/Nikolaos-Mantas/withdrawal-button
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WB_VERSION', '3.2.2' );
+define( 'WB_VERSION', '3.3.0' );
 define( 'WB_TEXT_DOMAIN', 'withdrawal-button' );
 define( 'WB_PLUGIN_SLUG', 'withdrawal-button' );
 define( 'WB_FILE', __FILE__ );
@@ -28,8 +28,11 @@ define( 'WB_AUTHOR', 'Nikolaos Mantas' );
 define( 'WB_AUTHOR_URI', 'https://nmantas.eu' );
 define( 'WB_AUTHOR_EMAIL', 'info@nmantas.eu' );
 define( 'WB_GITHUB_REPO', 'Nikolaos-Mantas/withdrawal-button' );
+define( 'WB_TELEMETRY_URL', 'https://nmantas.eu/wp-json/wb-telemetry/v1/ping' );
 
 require_once WB_PATH . 'includes/helpers.php';
+require_once WB_PATH . 'includes/class-wb-audit-log.php';
+require_once WB_PATH . 'includes/class-wb-telemetry.php';
 require_once WB_PATH . 'includes/class-wb-install.php';
 require_once WB_PATH . 'includes/class-wb-settings.php';
 require_once WB_PATH . 'includes/class-wb-requests.php';

@@ -14,9 +14,12 @@ if ( $delete_data ) {
 	global $wpdb;
 	$table = $wpdb->prefix . 'wb_withdrawal_requests';
 	$log_table = $wpdb->prefix . 'wb_rest_logs';
+	$audit_table = $wpdb->prefix . 'wb_audit_log';
 	$wpdb->query( "DROP TABLE IF EXISTS {$table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	$wpdb->query( "DROP TABLE IF EXISTS {$log_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	$wpdb->query( "DROP TABLE IF EXISTS {$audit_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	delete_option( 'wb_settings' );
 	delete_option( 'wb_version' );
 	wp_clear_scheduled_hook( 'wb_daily_cleanup' );
+	wp_clear_scheduled_hook( 'wb_telemetry_ping' );
 }

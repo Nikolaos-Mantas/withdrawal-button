@@ -121,6 +121,10 @@ class WB_REST_API {
 			return new WP_Error( 'wb_rest_forbidden', __( 'Invalid or missing API key.', WB_TEXT_DOMAIN ), array( 'status' => 401 ) );
 		}
 
+		if ( ! self::check_ip_allowlist() ) {
+			return new WP_Error( 'wb_rest_ip_blocked', __( 'IP address not allowed.', WB_TEXT_DOMAIN ), array( 'status' => 403 ) );
+		}
+
 		if ( ! self::check_rate_limit( $request ) ) {
 			return new WP_Error( 'wb_rest_rate_limit', __( 'Rate limit exceeded.', WB_TEXT_DOMAIN ), array( 'status' => 429 ) );
 		}
@@ -151,6 +155,25 @@ class WB_REST_API {
 
 		$key = sanitize_text_field( (string) $key );
 		return $key && hash_equals( $stored, $key );
+	}
+
+	/**
+	 * Check API-key client IP against optional allowlist (admins bypass).
+	 *
+	 * @return bool
+	 */
+	public static function check_ip_allowlist() {
+		$settings = WB_Settings::get();
+		if ( empty( $settings['rest_api_ip_allowlist_enabled'] ) ) {
+			return true;
+		}
+
+		$allowlist = wb_parse_ip_allowlist( $settings['rest_api_ip_allowlist'] );
+		if ( empty( $allowlist ) ) {
+			return false;
+		}
+
+		return wb_ip_in_allowlist( wb_get_ip(), $allowlist );
 	}
 
 	/**

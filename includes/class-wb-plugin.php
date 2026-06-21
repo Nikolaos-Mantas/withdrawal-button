@@ -41,6 +41,7 @@ class WB_Plugin {
 		WB_REST_API::init();
 		WB_Updater::init();
 		WB_Privacy::init();
+		WB_Telemetry::init();
 
 		if ( is_admin() ) {
 			WB_Admin::init();

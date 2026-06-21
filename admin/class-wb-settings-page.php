@@ -386,6 +386,14 @@ class WB_Settings_Page {
 				</td>
 			</tr>
 			<tr>
+				<th><?php esc_html_e( 'IP allowlist', WB_TEXT_DOMAIN ); ?></th>
+				<td>
+					<label><input type="checkbox" name="rest_api_ip_allowlist_enabled" value="1" <?php checked( $s['rest_api_ip_allowlist_enabled'], 1 ); ?>> <?php esc_html_e( 'Restrict API key access to allowed IPs', WB_TEXT_DOMAIN ); ?></label>
+					<p><textarea name="rest_api_ip_allowlist" rows="4" class="large-text code" placeholder="203.0.113.10"><?php echo esc_textarea( $s['rest_api_ip_allowlist'] ); ?></textarea></p>
+					<p class="description"><?php esc_html_e( 'One IP per line. Logged-in admins bypass the allowlist. Empty list when enabled denies all API key access.', WB_TEXT_DOMAIN ); ?></p>
+				</td>
+			</tr>
+			<tr>
 				<th><?php esc_html_e( 'Rate limit', WB_TEXT_DOMAIN ); ?></th>
 				<td>
 					<label><?php esc_html_e( 'Max requests:', WB_TEXT_DOMAIN ); ?> <input type="number" min="10" name="rest_api_rate_limit" value="<?php echo (int) $s['rest_api_rate_limit']; ?>"></label>
@@ -449,7 +457,41 @@ class WB_Settings_Page {
 		<h2><?php esc_html_e( 'Import requests', WB_TEXT_DOMAIN ); ?></h2>
 		<p class="description"><?php esc_html_e( 'Upload a CSV or JSON file exported from this plugin.', WB_TEXT_DOMAIN ); ?></p>
 		<?php WB_Admin::render_import_form( 'requests' ); ?>
+
+		<h2><?php esc_html_e( 'Audit log', WB_TEXT_DOMAIN ); ?></h2>
+		<?php self::render_audit_log_table(); ?>
 		<?php
+	}
+
+	/**
+	 * Render export/import audit log table.
+	 */
+	private static function render_audit_log_table() {
+		$logs = WB_Audit_Log::get_recent( 50 );
+		if ( ! $logs ) {
+			echo '<p>' . esc_html__( 'No audit entries yet.', WB_TEXT_DOMAIN ) . '</p>';
+			return;
+		}
+		echo '<table class="widefat striped"><thead><tr>';
+		echo '<th>' . esc_html__( 'Time', WB_TEXT_DOMAIN ) . '</th>';
+		echo '<th>' . esc_html__( 'User', WB_TEXT_DOMAIN ) . '</th>';
+		echo '<th>' . esc_html__( 'Action', WB_TEXT_DOMAIN ) . '</th>';
+		echo '<th>' . esc_html__( 'Details', WB_TEXT_DOMAIN ) . '</th>';
+		echo '</tr></thead><tbody>';
+		foreach ( $logs as $log ) {
+			$user_label = '—';
+			if ( $log->user_id ) {
+				$user = get_userdata( (int) $log->user_id );
+				$user_label = $user ? $user->display_name : '#' . (int) $log->user_id;
+			}
+			echo '<tr>';
+			echo '<td>' . esc_html( $log->logged_at ) . '</td>';
+			echo '<td>' . esc_html( $user_label ) . '</td>';
+			echo '<td>' . esc_html( WB_Audit_Log::action_label( $log->action ) ) . '</td>';
+			echo '<td>' . esc_html( WB_Audit_Log::format_context( $log->context ) ) . '</td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
 	}
 
 	/**
@@ -560,6 +602,15 @@ wp wb export requests --format=csv --file=requests.csv</pre>
 					<label>
 						<input type="checkbox" name="update_notifications" value="1" <?php checked( $s['update_notifications'], 1 ); ?>>
 						<?php esc_html_e( 'Show update notices on the Plugins screen', WB_TEXT_DOMAIN ); ?>
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<th><?php esc_html_e( 'Telemetry', WB_TEXT_DOMAIN ); ?></th>
+				<td>
+					<label>
+						<input type="checkbox" name="telemetry_enabled" value="1" <?php checked( $s['telemetry_enabled'], 1 ); ?>>
+						<?php esc_html_e( 'Send anonymous weekly usage statistics (no customer data)', WB_TEXT_DOMAIN ); ?>
 					</label>
 				</td>
 			</tr>

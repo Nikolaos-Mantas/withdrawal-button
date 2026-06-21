@@ -77,4 +77,62 @@ class WB_RestApiTest extends TestCase {
 		$key = WB_REST_API::generate_api_key();
 		$this->assertSame( 48, strlen( $key ) );
 	}
+
+	public function test_check_ip_allowlist_disabled_allows_any_ip() {
+		$_SERVER['REMOTE_ADDR'] = '198.51.100.1';
+		$this->assertTrue( WB_REST_API::check_ip_allowlist() );
+	}
+
+	public function test_check_ip_allowlist_blocks_unknown_ip() {
+		update_option(
+			'wb_settings',
+			wp_parse_args(
+				array(
+					'rest_api_ip_allowlist_enabled' => 1,
+					'rest_api_ip_allowlist'         => '203.0.113.10',
+				),
+				WB_Settings::get()
+			)
+		);
+		$_SERVER['REMOTE_ADDR'] = '198.51.100.1';
+		$this->assertFalse( WB_REST_API::check_ip_allowlist() );
+	}
+
+	public function test_check_ip_allowlist_allows_listed_ip() {
+		update_option(
+			'wb_settings',
+			wp_parse_args(
+				array(
+					'rest_api_ip_allowlist_enabled' => 1,
+					'rest_api_ip_allowlist'         => '203.0.113.10',
+				),
+				WB_Settings::get()
+			)
+		);
+		$_SERVER['REMOTE_ADDR'] = '203.0.113.10';
+		$this->assertTrue( WB_REST_API::check_ip_allowlist() );
+	}
+
+	public function test_authorize_blocks_api_key_when_ip_not_allowed() {
+		update_option(
+			'wb_settings',
+			wp_parse_args(
+				array(
+					'rest_api_ip_allowlist_enabled' => 1,
+					'rest_api_ip_allowlist'         => '203.0.113.10',
+				),
+				WB_Settings::get()
+			)
+		);
+		$_SERVER['REMOTE_ADDR'] = '198.51.100.1';
+
+		$request = new WP_REST_Request();
+		$request->set_header( 'X-WB-API-Key', 'secret-api-key' );
+
+		$result = WB_REST_API::authorize( $request );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'wb_rest_ip_blocked', $result->code );
+		$this->assertSame( 403, $result->data['status'] );
+	}
 }

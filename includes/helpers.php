@@ -61,6 +61,34 @@ function wb_get_ip() {
 }
 
 /**
+ * Parse validated IPs from allowlist textarea (one per line).
+ *
+ * @param string $raw Raw textarea content.
+ * @return array<int, string>
+ */
+function wb_parse_ip_allowlist( $raw ) {
+	$lines = array_filter( array_map( 'trim', explode( "\n", (string) $raw ) ) );
+	$valid = array();
+	foreach ( $lines as $line ) {
+		if ( filter_var( $line, FILTER_VALIDATE_IP ) ) {
+			$valid[] = $line;
+		}
+	}
+	return $valid;
+}
+
+/**
+ * Whether an IP is in a parsed allowlist.
+ *
+ * @param string               $ip        IP address.
+ * @param array<int, string>   $allowlist Parsed allowlist.
+ * @return bool
+ */
+function wb_ip_in_allowlist( $ip, $allowlist ) {
+	return in_array( $ip, $allowlist, true );
+}
+
+/**
  * Maybe anonymize IP for GDPR.
  *
  * @param string $ip IP address.

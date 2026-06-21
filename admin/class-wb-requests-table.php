@@ -63,7 +63,8 @@ class WB_Requests_Table extends WP_List_Table {
 	 */
 	protected function get_bulk_actions() {
 		$actions = array(
-			'delete' => __( 'Delete', WB_TEXT_DOMAIN ),
+			'delete'    => __( 'Delete', WB_TEXT_DOMAIN ),
+			'anonymize' => __( 'Anonymize', WB_TEXT_DOMAIN ),
 		);
 		foreach ( wb_statuses() as $key => $label ) {
 			$actions[ 'status_' . $key ] = sprintf( __( 'Mark as %s', WB_TEXT_DOMAIN ), $label );
@@ -186,6 +187,18 @@ class WB_Requests_Table extends WP_List_Table {
 			}
 		}
 
+		if ( 'anonymize' === $action ) {
+			$done = 0;
+			foreach ( $ids as $id ) {
+				if ( WB_Privacy::anonymize_request( $id ) ) {
+					$done++;
+				}
+			}
+			if ( $done ) {
+				WB_Audit_Log::log( 'bulk_anonymize', array( 'count' => $done ) );
+			}
+		}
+
 		if ( 0 === strpos( $action, 'status_' ) ) {
 			$status = substr( $action, 7 );
 			if ( array_key_exists( $status, wb_statuses() ) ) {
@@ -211,7 +224,11 @@ class WB_Requests_Table extends WP_List_Table {
 			case 'submitted_at':
 				return esc_html( wb_format_datetime( $item->submitted_at ) );
 			case 'customer_name':
-				return esc_html( $item->customer_name );
+				$html = esc_html( $item->customer_name );
+				if ( ! empty( $item->anonymized_at ) ) {
+					$html .= ' <span class="wb-anonymized-badge" title="' . esc_attr__( 'Anonymized', WB_TEXT_DOMAIN ) . '">*</span>';
+				}
+				return $html;
 			case 'customer_email':
 				return '<a href="mailto:' . esc_attr( $item->customer_email ) . '">' . esc_html( $item->customer_email ) . '</a>';
 			case 'order_number':

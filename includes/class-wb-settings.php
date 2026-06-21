@@ -122,10 +122,13 @@ class WB_Settings {
 			'rest_api_rate_window' => 3600,
 			'rest_api_logging_enabled' => 0,
 			'rest_api_log_retention_days' => 30,
+			'rest_api_ip_allowlist_enabled' => 0,
+			'rest_api_ip_allowlist'         => '',
 
 			// Updates (GitHub).
 			'update_channel'         => 'stable',
 			'update_notifications'   => 1,
+			'telemetry_enabled'      => 0,
 		);
 	}
 
@@ -253,6 +256,8 @@ class WB_Settings {
 			}
 			$out['rest_api_logging_enabled']    = empty( $input['rest_api_logging_enabled'] ) ? 0 : 1;
 			$out['rest_api_log_retention_days'] = isset( $input['rest_api_log_retention_days'] ) ? max( 1, (int) $input['rest_api_log_retention_days'] ) : $out['rest_api_log_retention_days'];
+			$out['rest_api_ip_allowlist_enabled'] = empty( $input['rest_api_ip_allowlist_enabled'] ) ? 0 : 1;
+			$out['rest_api_ip_allowlist']       = isset( $input['rest_api_ip_allowlist'] ) ? self::sanitize_ip_allowlist( $input['rest_api_ip_allowlist'] ) : $out['rest_api_ip_allowlist'];
 		}
 
 		if ( 'updates' === $tab ) {
@@ -260,6 +265,7 @@ class WB_Settings {
 			$channel  = isset( $input['update_channel'] ) ? sanitize_key( $input['update_channel'] ) : $out['update_channel'];
 			$out['update_channel']       = in_array( $channel, $channels, true ) ? $channel : $out['update_channel'];
 			$out['update_notifications'] = empty( $input['update_notifications'] ) ? 0 : 1;
+			$out['telemetry_enabled']    = empty( $input['telemetry_enabled'] ) ? 0 : 1;
 		}
 
 		if ( 'import-export' === $tab ) {
@@ -281,5 +287,22 @@ class WB_Settings {
 			return $color;
 		}
 		return '#333333';
+	}
+
+	/**
+	 * Sanitize IP allowlist textarea (one IP per line).
+	 *
+	 * @param string $raw Raw textarea.
+	 * @return string
+	 */
+	private static function sanitize_ip_allowlist( $raw ) {
+		$lines  = array_filter( array_map( 'trim', explode( "\n", (string) $raw ) ) );
+		$valid  = array();
+		foreach ( $lines as $line ) {
+			if ( filter_var( $line, FILTER_VALIDATE_IP ) ) {
+				$valid[] = $line;
+			}
+		}
+		return implode( "\n", $valid );
 	}
 }

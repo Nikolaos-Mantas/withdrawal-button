@@ -4,7 +4,8 @@
  */
 
 define( 'ABSPATH', __DIR__ . '/../' );
-define( 'WB_VERSION', '3.2.0' );
+define( 'WB_VERSION', '3.3.0' );
+define( 'WB_TELEMETRY_URL', 'https://nmantas.eu/wp-json/wb-telemetry/v1/ping' );
 define( 'WB_TEXT_DOMAIN', 'withdrawal-button' );
 define( 'WB_PLUGIN_SLUG', 'withdrawal-button' );
 define( 'WB_FILE', dirname( __DIR__ ) . '/withdrawal-button.php' );
@@ -87,6 +88,74 @@ if ( ! function_exists( 'esc_html' ) ) {
 
 if ( ! function_exists( 'esc_attr' ) ) {
 	function esc_attr( $text ) {
+		return $text;
+	}
+}
+
+if ( ! defined( 'AUTH_KEY' ) ) {
+	define( 'AUTH_KEY', 'test-auth-key' );
+}
+
+$GLOBALS['wpdb'] = new class() {
+	public $prefix = 'wp_';
+
+	public function get_var( $query ) {
+		return null;
+	}
+
+	public function prepare( $query, ...$args ) {
+		return $query;
+	}
+
+	public function get_results( $query ) {
+		return array();
+	}
+
+	public function insert( $table, $data, $format ) {
+		return true;
+	}
+
+	public function query( $query ) {
+		return true;
+	}
+};
+
+if ( ! function_exists( 'wp_json_encode' ) ) {
+	function wp_json_encode( $data, $options = 0, $depth = 512 ) {
+		return json_encode( $data, $options, $depth );
+	}
+}
+
+if ( ! function_exists( 'get_current_user_id' ) ) {
+	function get_current_user_id() {
+		return isset( $GLOBALS['wb_test_current_user_id'] ) ? (int) $GLOBALS['wb_test_current_user_id'] : 0;
+	}
+}
+
+if ( ! function_exists( 'get_locale' ) ) {
+	function get_locale() {
+		return 'en_US';
+	}
+}
+
+if ( ! function_exists( 'get_userdata' ) ) {
+	function get_userdata( $user_id ) {
+		return (object) array(
+			'display_name' => 'Test User',
+			'ID'           => $user_id,
+		);
+	}
+}
+
+if ( ! function_exists( 'wp_remote_post' ) ) {
+	function wp_remote_post( $url, $args = array() ) {
+		$GLOBALS['wb_test_last_remote_post'] = compact( 'url', 'args' );
+		return array( 'response' => array( 'code' => 200 ) );
+	}
+}
+
+if ( ! function_exists( 'esc_textarea' ) ) {
+	function esc_textarea( $text ) {
 		return $text;
 	}
 }
@@ -270,6 +339,8 @@ function wb_test_reset( $settings_overrides = array() ) {
 	$GLOBALS['wb_test_options']    = array();
 	$GLOBALS['wb_test_transients'] = array();
 	$GLOBALS['wb_test_user_caps']  = array();
+	$GLOBALS['wb_test_current_user_id'] = 0;
+	$GLOBALS['wb_test_last_remote_post'] = null;
 	$_POST                         = array();
 	$_SERVER['REMOTE_ADDR']        = '203.0.113.10';
 
@@ -280,6 +351,8 @@ function wb_test_reset( $settings_overrides = array() ) {
 }
 
 require_once WB_PATH . 'includes/class-wb-settings.php';
+require_once WB_PATH . 'includes/class-wb-audit-log.php';
+require_once WB_PATH . 'includes/class-wb-telemetry.php';
 require_once WB_PATH . 'includes/class-wb-rest-api.php';
 require_once WB_PATH . 'includes/helpers.php';
 require_once WB_PATH . 'includes/class-wb-spam.php';
@@ -287,6 +360,7 @@ require_once WB_PATH . 'includes/class-wb-form.php';
 require_once WB_PATH . 'includes/class-wb-feedback.php';
 require_once WB_PATH . 'includes/class-wb-requests.php';
 require_once WB_PATH . 'includes/class-wb-privacy.php';
+require_once WB_PATH . 'includes/class-wb-import-export.php';
 require_once WB_PATH . 'includes/class-wb-updater.php';
 
 wb_test_reset();
