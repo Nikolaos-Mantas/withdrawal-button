@@ -27,6 +27,21 @@ class WB_Spam {
 		$settings = WB_Settings::get();
 		$provider = $settings['captcha_provider'];
 
+		if ( $settings['captcha_require_privacy_consent'] && 'none' !== $provider ) {
+			return;
+		}
+
+		self::enqueue_captcha_scripts( $settings );
+	}
+
+	/**
+	 * Enqueue third-party captcha scripts.
+	 *
+	 * @param array<string, mixed> $settings Settings.
+	 */
+	public static function enqueue_captcha_scripts( $settings ) {
+		$provider = $settings['captcha_provider'];
+
 		if ( 'recaptcha_v2' === $provider && $settings['recaptcha_v2_site'] ) {
 			wp_enqueue_script( 'google-recaptcha', 'https://www.google.com/recaptcha/api.js', array(), null, true );
 		}
@@ -121,7 +136,7 @@ class WB_Spam {
 			$result = self::remote_verify( 'https://www.google.com/recaptcha/api/siteverify', array(
 				'secret'   => $secret,
 				'response' => $token,
-				'remoteip' => wb_get_ip(),
+				'remoteip' => wb_maybe_anonymize_ip( wb_get_ip() ),
 			) );
 			if ( empty( $result['success'] ) ) {
 				return __( 'Captcha verification failed. Please try again.', WB_TEXT_DOMAIN );
@@ -137,7 +152,7 @@ class WB_Spam {
 			$result = self::remote_verify( 'https://www.google.com/recaptcha/api/siteverify', array(
 				'secret'   => $secret,
 				'response' => $token,
-				'remoteip' => wb_get_ip(),
+				'remoteip' => wb_maybe_anonymize_ip( wb_get_ip() ),
 			) );
 			$score  = isset( $result['score'] ) ? (float) $result['score'] : 0;
 			$min    = (float) $settings['recaptcha_v3_score'];
@@ -155,7 +170,7 @@ class WB_Spam {
 			$result = self::remote_verify( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
 				'secret'   => $secret,
 				'response' => $token,
-				'remoteip' => wb_get_ip(),
+				'remoteip' => wb_maybe_anonymize_ip( wb_get_ip() ),
 			) );
 			if ( empty( $result['success'] ) ) {
 				return __( 'Captcha verification failed. Please try again.', WB_TEXT_DOMAIN );

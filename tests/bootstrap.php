@@ -4,7 +4,7 @@
  */
 
 define( 'ABSPATH', __DIR__ . '/../' );
-define( 'WB_VERSION', '3.1.1' );
+define( 'WB_VERSION', '3.2.0' );
 define( 'WB_TEXT_DOMAIN', 'withdrawal-button' );
 define( 'WB_PLUGIN_SLUG', 'withdrawal-button' );
 define( 'WB_FILE', dirname( __DIR__ ) . '/withdrawal-button.php' );
@@ -285,6 +285,8 @@ require_once WB_PATH . 'includes/helpers.php';
 require_once WB_PATH . 'includes/class-wb-spam.php';
 require_once WB_PATH . 'includes/class-wb-form.php';
 require_once WB_PATH . 'includes/class-wb-feedback.php';
+require_once WB_PATH . 'includes/class-wb-requests.php';
+require_once WB_PATH . 'includes/class-wb-privacy.php';
 require_once WB_PATH . 'includes/class-wb-updater.php';
 
 wb_test_reset();

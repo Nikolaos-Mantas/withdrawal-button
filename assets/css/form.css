@@ -125,6 +125,25 @@
 	margin: 16px 0;
 }
 
+.wb-captcha-pending .wb-captcha-field {
+	display: none;
+}
+
+.wb-gdpr-notice {
+	font-size: 13px;
+	color: #555;
+	margin: 12px 0;
+	padding: 10px 12px;
+	background: rgba(0, 0, 0, 0.04);
+	border-radius: var(--wb-radius, 5px);
+}
+
+.wb-captcha-hint {
+	font-size: 13px;
+	color: #666;
+	margin-bottom: 8px;
+}
+
 .wb-title {
 	color: var(--wb-primary, #b32d2e);
 }

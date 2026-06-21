@@ -7,6 +7,8 @@
  * @var array<int, string>         $errors
  * @var array<int, string>         $stores
  * @var string                     $captcha
+ * @var bool                       $captcha_defer
+ * @var string                     $data_notice
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,6 +32,7 @@ if ( $errors ) {
 <?php if ( $policy_url ) : ?>
 	<p><a href="<?php echo esc_url( $policy_url ); ?>"><?php esc_html_e( 'View Returns Policy', WB_TEXT_DOMAIN ); ?></a></p>
 <?php endif; ?>
+<p class="wb-gdpr-notice"><?php echo esc_html( $data_notice ); ?></p>
 
 <form method="post" action="" class="wb-form" id="wb-withdrawal-form">
 	<?php wp_nonce_field( 'wb_form', 'wb_nonce' ); ?>
@@ -85,7 +88,12 @@ if ( $errors ) {
 	</div>
 
 	<?php if ( $captcha ) : ?>
-		<div class="wb-captcha"><?php echo $captcha; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+		<div class="wb-captcha<?php echo $captcha_defer ? ' wb-captcha-pending' : ''; ?>" id="wb-captcha-wrap" data-defer="<?php echo $captcha_defer ? '1' : '0'; ?>">
+			<?php if ( $captcha_defer ) : ?>
+				<p class="wb-captcha-hint description"><?php esc_html_e( 'Anti-spam verification loads after you accept the Privacy Policy.', WB_TEXT_DOMAIN ); ?></p>
+			<?php endif; ?>
+			<div class="wb-captcha-field"><?php echo $captcha; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+		</div>
 	<?php endif; ?>
 
 	<button type="submit" class="wb-btn"><?php esc_html_e( 'Continue to Confirmation', WB_TEXT_DOMAIN ); ?></button>

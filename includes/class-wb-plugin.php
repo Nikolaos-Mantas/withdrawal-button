@@ -40,6 +40,7 @@ class WB_Plugin {
 		WB_Blocks::init();
 		WB_REST_API::init();
 		WB_Updater::init();
+		WB_Privacy::init();
 
 		if ( is_admin() ) {
 			WB_Admin::init();

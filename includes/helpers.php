@@ -146,7 +146,7 @@ function wb_build_replacements( $fields, $request_id = 0 ) {
 		'{products}'     => $fields['products'] ?? '',
 		'{message}'      => ! empty( $fields['message'] ) ? $fields['message'] : '—',
 		'{date}'         => $date,
-		'{ip}'           => wb_get_ip(),
+		'{ip}'           => isset( $fields['ip'] ) ? $fields['ip'] : wb_maybe_anonymize_ip( wb_get_ip() ),
 		'{site_name}'    => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 		'{admin_url}'    => admin_url( 'admin.php?page=wb-requests' ),
 		'{days}'         => (string) (int) $settings['withdrawal_days'],

@@ -46,13 +46,20 @@ class WB_Form {
 		wp_enqueue_script( 'wb-form', WB_URL . 'assets/js/form.js', array( 'jquery' ), WB_VERSION, true );
 
 		$settings = WB_Settings::get();
+		$captcha_defer = $settings['captcha_require_privacy_consent'] && 'none' !== $settings['captcha_provider'];
+
 		wp_localize_script( 'wb-form', 'wbForm', array(
 			'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
 			'recaptchaV3Key' => 'recaptcha_v3' === $settings['captcha_provider'] ? $settings['recaptcha_v3_site'] : '',
 			'wooAutofill'    => wb_is_woocommerce_enabled() && $settings['woo_autofill'],
+			'captchaDefer'   => $captcha_defer,
+			'captchaProvider'=> $settings['captcha_provider'],
+			'recaptchaV2Site'=> $settings['recaptcha_v2_site'],
+			'turnstileSite'  => $settings['turnstile_site'],
 			'i18n'           => array(
 				'orderFound' => __( 'Order found. Details were filled automatically.', WB_TEXT_DOMAIN ),
 				'orderError' => __( 'Could not find an order with this number.', WB_TEXT_DOMAIN ),
+				'acceptPrivacyForCaptcha' => __( 'Accept the Privacy Policy to enable anti-spam verification.', WB_TEXT_DOMAIN ),
 			),
 		) );
 
@@ -100,13 +107,17 @@ class WB_Form {
 	 */
 	public static function collect_fields() {
 		return array(
-			'name'         => isset( $_POST['wb_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_name'] ) ) : '',
-			'email'        => isset( $_POST['wb_email'] ) ? sanitize_email( wp_unslash( $_POST['wb_email'] ) ) : '',
-			'order_number' => isset( $_POST['wb_order'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_order'] ) ) : '',
-			'store'        => isset( $_POST['wb_store'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_store'] ) ) : '',
-			'products'     => isset( $_POST['wb_products'] ) ? sanitize_textarea_field( wp_unslash( $_POST['wb_products'] ) ) : '',
-			'message'      => isset( $_POST['wb_message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['wb_message'] ) ) : '',
-			'wc_order_id'  => isset( $_POST['wb_wc_order_id'] ) ? (int) $_POST['wb_wc_order_id'] : 0,
+			'name'                    => isset( $_POST['wb_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_name'] ) ) : '',
+			'email'                   => isset( $_POST['wb_email'] ) ? sanitize_email( wp_unslash( $_POST['wb_email'] ) ) : '',
+			'order_number'            => isset( $_POST['wb_order'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_order'] ) ) : '',
+			'store'                   => isset( $_POST['wb_store'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_store'] ) ) : '',
+			'products'                => isset( $_POST['wb_products'] ) ? sanitize_textarea_field( wp_unslash( $_POST['wb_products'] ) ) : '',
+			'message'                 => isset( $_POST['wb_message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['wb_message'] ) ) : '',
+			'wc_order_id'             => isset( $_POST['wb_wc_order_id'] ) ? (int) $_POST['wb_wc_order_id'] : 0,
+			'privacy_consent_at'      => isset( $_POST['wb_privacy_consent_at'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_privacy_consent_at'] ) ) : '',
+			'declare_consent_at'      => isset( $_POST['wb_declare_consent_at'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_declare_consent_at'] ) ) : '',
+			'privacy_policy_url'      => isset( $_POST['wb_privacy_policy_url'] ) ? esc_url_raw( wp_unslash( $_POST['wb_privacy_policy_url'] ) ) : '',
+			'privacy_consent_version' => isset( $_POST['wb_privacy_consent_version'] ) ? sanitize_text_field( wp_unslash( $_POST['wb_privacy_consent_version'] ) ) : '',
 		);
 	}
 
@@ -176,11 +187,13 @@ class WB_Form {
 		}
 
 		echo wb_render_template( 'form/form.php', array(
-			'settings' => $settings,
-			'fields'   => $fields,
-			'errors'   => $errors,
-			'stores'   => wb_get_stores(),
-			'captcha'  => WB_Spam::render_captcha_field(),
+			'settings'      => $settings,
+			'fields'        => $fields,
+			'errors'        => $errors,
+			'stores'        => wb_get_stores(),
+			'captcha'       => WB_Spam::render_captcha_field(),
+			'captcha_defer' => $settings['captcha_require_privacy_consent'] && 'none' !== $settings['captcha_provider'],
+			'data_notice'   => WB_Privacy::form_data_notice(),
 		) );
 	}
 
@@ -204,7 +217,7 @@ class WB_Form {
 		}
 
 		echo wb_render_template( 'form/confirm.php', array(
-			'fields' => $fields,
+			'fields' => array_merge( $fields, WB_Privacy::capture_consent_meta() ),
 		) );
 	}
 
@@ -239,6 +252,10 @@ class WB_Form {
 		$now   = current_time( 'mysql' );
 		$ip    = wb_maybe_anonymize_ip( wb_get_ip() );
 		$date  = date_i18n( wb_datetime_format(), current_time( 'timestamp' ) );
+		$fields['ip'] = $ip;
+
+		$consent_at = $fields['privacy_consent_at'] ? $fields['privacy_consent_at'] : current_time( 'mysql' );
+		$declare_at = $fields['declare_consent_at'] ? $fields['declare_consent_at'] : $consent_at;
 
 		$repl             = wb_build_replacements( $fields );
 		$customer_subject = wb_apply_placeholders( $settings['customer_subject'], $repl );
@@ -255,21 +272,25 @@ class WB_Form {
 		$inserted = $wpdb->insert(
 			$table,
 			array(
-				'submitted_at'     => $now,
-				'customer_name'    => $fields['name'],
-				'customer_email'   => $fields['email'],
-				'order_number'     => $fields['order_number'],
-				'store'            => $fields['store'],
-				'products'         => $fields['products'],
-				'message'          => $fields['message'],
-				'status'           => 'new',
-				'ip_address'       => $ip,
-				'email_copy'       => "SUBJECT: {$customer_subject}\n\n{$customer_body}",
-				'updated_at'       => $now,
-				'wc_order_id'      => (int) $fields['wc_order_id'],
-				'status_history'   => $history,
+				'submitted_at'            => $now,
+				'customer_name'           => $fields['name'],
+				'customer_email'          => $fields['email'],
+				'order_number'            => $fields['order_number'],
+				'store'                   => $fields['store'],
+				'products'                => $fields['products'],
+				'message'                 => $fields['message'],
+				'status'                  => 'new',
+				'ip_address'              => $ip,
+				'email_copy'              => "SUBJECT: {$customer_subject}\n\n{$customer_body}",
+				'updated_at'              => $now,
+				'wc_order_id'             => (int) $fields['wc_order_id'],
+				'status_history'        => $history,
+				'privacy_consent_at'      => $consent_at,
+				'declare_consent_at'      => $declare_at,
+				'privacy_policy_url'      => substr( (string) $fields['privacy_policy_url'], 0, 255 ),
+				'privacy_consent_version' => substr( (string) $fields['privacy_consent_version'], 0, 32 ),
 			),
-			array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s' )
+			array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s' )
 		);
 
 		if ( false === $inserted ) {

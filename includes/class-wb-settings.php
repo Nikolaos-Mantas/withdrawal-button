@@ -32,9 +32,10 @@ class WB_Settings {
 			'admin_email'              => $admin,
 			'withdrawal_days'          => 14,
 			'retention_months'         => 60,
+			'retention_action'         => 'delete',
 			'policy_page_id'           => 0,
 			'stores'                   => '',
-			'anonymize_ip'             => 0,
+			'anonymize_ip'             => 1,
 			'delete_data_on_uninstall' => 0,
 
 			// Form texts.
@@ -106,6 +107,7 @@ class WB_Settings {
 			'recaptcha_v3_score'   => 0.5,
 			'turnstile_site'       => '',
 			'turnstile_secret'     => '',
+			'captcha_require_privacy_consent' => 1,
 
 			// WooCommerce.
 			'woo_enabled'              => 0,
@@ -161,6 +163,8 @@ class WB_Settings {
 			$out['success_message']          = isset( $input['success_message'] ) ? sanitize_textarea_field( $input['success_message'] ) : $out['success_message'];
 			$out['anonymize_ip']             = empty( $input['anonymize_ip'] ) ? 0 : 1;
 			$out['delete_data_on_uninstall'] = empty( $input['delete_data_on_uninstall'] ) ? 0 : 1;
+			$action                          = isset( $input['retention_action'] ) ? sanitize_key( $input['retention_action'] ) : $out['retention_action'];
+			$out['retention_action']         = in_array( $action, array( 'delete', 'anonymize' ), true ) ? $action : $out['retention_action'];
 		}
 
 		if ( 'branding' === $tab ) {
@@ -226,6 +230,7 @@ class WB_Settings {
 			$out['recaptcha_v3_score']  = isset( $input['recaptcha_v3_score'] ) ? min( 1, max( 0, (float) $input['recaptcha_v3_score'] ) ) : $out['recaptcha_v3_score'];
 			$out['turnstile_site']      = isset( $input['turnstile_site'] ) ? sanitize_text_field( $input['turnstile_site'] ) : $out['turnstile_site'];
 			$out['turnstile_secret']    = isset( $input['turnstile_secret'] ) ? sanitize_text_field( $input['turnstile_secret'] ) : $out['turnstile_secret'];
+			$out['captcha_require_privacy_consent'] = empty( $input['captcha_require_privacy_consent'] ) ? 0 : 1;
 		}
 
 		if ( 'woocommerce' === $tab ) {

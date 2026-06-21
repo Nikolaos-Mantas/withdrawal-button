@@ -159,10 +159,7 @@ class WB_REST_Logger {
 	 */
 	public static function cleanup_old_logs() {
 		$settings = WB_Settings::get();
-		if ( ! $settings['rest_api_logging_enabled'] ) {
-			return;
-		}
-		$days  = max( 1, (int) $settings['rest_api_log_retention_days'] );
+		$days     = max( 1, (int) $settings['rest_api_log_retention_days'] );
 		global $wpdb;
 		$table  = self::table_name();
 		$cutoff = gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );

@@ -35,6 +35,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<input type="hidden" name="wb_products" value="<?php echo esc_attr( $fields['products'] ); ?>">
 	<input type="hidden" name="wb_message" value="<?php echo esc_attr( $fields['message'] ); ?>">
 	<input type="hidden" name="wb_wc_order_id" value="<?php echo esc_attr( (string) $fields['wc_order_id'] ); ?>">
+	<input type="hidden" name="wb_privacy_consent_at" value="<?php echo esc_attr( $fields['privacy_consent_at'] ?? '' ); ?>">
+	<input type="hidden" name="wb_declare_consent_at" value="<?php echo esc_attr( $fields['declare_consent_at'] ?? '' ); ?>">
+	<input type="hidden" name="wb_privacy_policy_url" value="<?php echo esc_attr( $fields['privacy_policy_url'] ?? '' ); ?>">
+	<input type="hidden" name="wb_privacy_consent_version" value="<?php echo esc_attr( $fields['privacy_consent_version'] ?? '' ); ?>">
 	<input type="hidden" name="wb_declare" value="1">
 	<input type="hidden" name="wb_privacy" value="1">
 	<button type="submit" class="wb-btn"><?php esc_html_e( 'Submit Withdrawal', WB_TEXT_DOMAIN ); ?></button>

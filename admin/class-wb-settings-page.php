@@ -161,10 +161,28 @@ class WB_Settings_Page {
 				<td><textarea class="large-text" rows="2" id="success_message" name="success_message"><?php echo esc_textarea( $s['success_message'] ); ?></textarea></td>
 			</tr>
 			<tr>
-				<th><?php esc_html_e( 'GDPR', WB_TEXT_DOMAIN ); ?></th>
+				<th><?php esc_html_e( 'GDPR & data protection', WB_TEXT_DOMAIN ); ?></th>
 				<td>
-					<label><input type="checkbox" name="anonymize_ip" value="1" <?php checked( $s['anonymize_ip'], 1 ); ?>> <?php esc_html_e( 'Anonymize IP addresses', WB_TEXT_DOMAIN ); ?></label><br>
+					<label><input type="checkbox" name="anonymize_ip" value="1" <?php checked( $s['anonymize_ip'], 1 ); ?>> <?php esc_html_e( 'Anonymize IP addresses before storage', WB_TEXT_DOMAIN ); ?></label><br>
 					<label><input type="checkbox" name="delete_data_on_uninstall" value="1" <?php checked( $s['delete_data_on_uninstall'], 1 ); ?>> <?php esc_html_e( 'Delete all data on uninstall', WB_TEXT_DOMAIN ); ?></label>
+					<p class="description"><?php esc_html_e( 'After the retention period, choose whether old requests are permanently deleted or anonymized (ID and status history kept).', WB_TEXT_DOMAIN ); ?></p>
+					<label>
+						<input type="radio" name="retention_action" value="delete" <?php checked( $s['retention_action'], 'delete' ); ?>>
+						<?php esc_html_e( 'Delete expired requests', WB_TEXT_DOMAIN ); ?>
+					</label><br>
+					<label>
+						<input type="radio" name="retention_action" value="anonymize" <?php checked( $s['retention_action'], 'anonymize' ); ?>>
+						<?php esc_html_e( 'Anonymize expired requests', WB_TEXT_DOMAIN ); ?>
+					</label>
+					<p class="description">
+						<?php
+						printf(
+							/* translators: %s: admin URL */
+							esc_html__( 'Export or erase personal data under Tools → Privacy. Suggested policy text is added when a privacy policy page is configured (%s).', WB_TEXT_DOMAIN ),
+							'<a href="' . esc_url( admin_url( 'options-privacy.php' ) ) . '">' . esc_html__( 'Privacy settings', WB_TEXT_DOMAIN ) . '</a>'
+						);
+						?>
+					</p>
 				</td>
 			</tr>
 		</table>
@@ -329,6 +347,13 @@ class WB_Settings_Page {
 				<td>
 					<input type="text" class="regular-text" name="turnstile_site" value="<?php echo esc_attr( $s['turnstile_site'] ); ?>" placeholder="Site key"><br>
 					<input type="text" class="regular-text" name="turnstile_secret" value="<?php echo esc_attr( $s['turnstile_secret'] ); ?>" placeholder="Secret key">
+				</td>
+			</tr>
+			<tr>
+				<th><?php esc_html_e( 'Captcha & privacy', WB_TEXT_DOMAIN ); ?></th>
+				<td>
+					<label><input type="checkbox" name="captcha_require_privacy_consent" value="1" <?php checked( $s['captcha_require_privacy_consent'], 1 ); ?>> <?php esc_html_e( 'Load captcha scripts only after the visitor accepts the Privacy Policy', WB_TEXT_DOMAIN ); ?></label>
+					<p class="description"><?php esc_html_e( 'Recommended for GDPR. Third-party captcha providers may process IP addresses.', WB_TEXT_DOMAIN ); ?></p>
 				</td>
 			</tr>
 		</table>

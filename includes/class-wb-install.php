@@ -57,10 +57,17 @@ class WB_Install {
 			updated_at DATETIME NULL,
 			wc_order_id BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 			status_history LONGTEXT NULL,
+			privacy_consent_at DATETIME NULL,
+			declare_consent_at DATETIME NULL,
+			privacy_policy_url VARCHAR(255) NOT NULL DEFAULT '',
+			privacy_consent_version VARCHAR(32) NOT NULL DEFAULT '',
+			anonymized_at DATETIME NULL,
 			PRIMARY KEY  (id),
 			KEY status (status),
 			KEY order_number (order_number),
-			KEY wc_order_id (wc_order_id)
+			KEY wc_order_id (wc_order_id),
+			KEY customer_email (customer_email),
+			KEY submitted_at (submitted_at)
 		) {$charset};";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -110,7 +117,22 @@ class WB_Install {
 		$months   = max( 1, (int) $settings['retention_months'] );
 		$table    = wb_table_name();
 		$cutoff   = gmdate( 'Y-m-d H:i:s', strtotime( "-{$months} months" ) );
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE submitted_at < %s", $cutoff ) );
+		$action   = $settings['retention_action'];
+
+		if ( 'anonymize' === $action ) {
+			$ids = $wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT id FROM {$table} WHERE submitted_at < %s AND anonymized_at IS NULL",
+					$cutoff
+				)
+			);
+			foreach ( $ids as $id ) {
+				WB_Privacy::anonymize_request( (int) $id );
+			}
+		} else {
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE submitted_at < %s", $cutoff ) );
+		}
+
 		WB_REST_Logger::cleanup_old_logs();
 	}
 }
