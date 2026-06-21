@@ -5,7 +5,7 @@
  * Version:     3.0.0
  * Author:      Nikolaos Mantas
  * Author URI:  https://nmantas.eu
- * Plugin URI:  https://github.com/nmantas/withdrawal-button
+ * Plugin URI:  https://github.com/Nikolaos-Mantas/withdrawal-button
  * License:     Proprietary — see LICENSE file
  * Text Domain: withdrawal-button
  * Domain Path: /languages
@@ -27,7 +27,7 @@ define( 'WB_TABLE', 'wb_withdrawal_requests' );
 define( 'WB_AUTHOR', 'Nikolaos Mantas' );
 define( 'WB_AUTHOR_URI', 'https://nmantas.eu' );
 define( 'WB_AUTHOR_EMAIL', 'info@nmantas.eu' );
-define( 'WB_GITHUB_REPO', 'nmantas/withdrawal-button' );
+define( 'WB_GITHUB_REPO', 'Nikolaos-Mantas/withdrawal-button' );
 
 require_once WB_PATH . 'includes/helpers.php';
 require_once WB_PATH . 'includes/class-wb-install.php';

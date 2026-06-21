@@ -14,7 +14,7 @@ define( 'WB_TABLE', 'wb_withdrawal_requests' );
 define( 'WB_AUTHOR', 'Nikolaos Mantas' );
 define( 'WB_AUTHOR_URI', 'https://nmantas.eu' );
 define( 'WB_AUTHOR_EMAIL', 'info@nmantas.eu' );
-define( 'WB_GITHUB_REPO', 'nmantas/withdrawal-button' );
+define( 'WB_GITHUB_REPO', 'Nikolaos-Mantas/withdrawal-button' );
 
 if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
 	define( 'HOUR_IN_SECONDS', 3600 );
