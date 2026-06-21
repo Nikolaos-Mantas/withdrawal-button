@@ -244,7 +244,7 @@ class WB_Updater {
 			'banners'     => array(),
 			'banners_rtl' => array(),
 			'tested'      => '',
-			'requires_php' => '8.0',
+			'requires_php' => '8.1',
 			'compatibility' => new stdClass(),
 		);
 
