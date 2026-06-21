@@ -48,7 +48,7 @@ class WB_Form {
 		$settings = WB_Settings::get();
 		wp_localize_script( 'wb-form', 'wbForm', array(
 			'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
-			'recaptchaV3Key' => 'recaptcha_v3' === $settings['captcha_provider'] ? $settings['recaptcha_v3_site'] : '',
+			'recaptchaV3Key' => wb_is_captcha_configured( $settings ) && 'recaptcha_v3' === $settings['captcha_provider'] ? $settings['recaptcha_v3_site'] : '',
 			'wooAutofill'    => wb_is_woocommerce_enabled() && $settings['woo_autofill'],
 			'i18n'           => array(
 				'orderFound' => __( 'Order found. Details were filled automatically.', WB_TEXT_DOMAIN ),

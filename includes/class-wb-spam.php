@@ -20,7 +20,7 @@ class WB_Spam {
 	 * Enqueue captcha scripts when needed.
 	 */
 	public static function enqueue_scripts() {
-		if ( ! WB_Form::page_has_form() ) {
+		if ( ! WB_Form::page_has_form() || ! wb_is_captcha_configured() ) {
 			return;
 		}
 
@@ -33,13 +33,17 @@ class WB_Spam {
 	 * @param array<string, mixed> $settings Settings.
 	 */
 	public static function enqueue_captcha_scripts( $settings ) {
+		if ( ! wb_is_captcha_configured( $settings ) ) {
+			return;
+		}
+
 		$provider = $settings['captcha_provider'];
 
-		if ( 'recaptcha_v2' === $provider && $settings['recaptcha_v2_site'] ) {
+		if ( 'recaptcha_v2' === $provider ) {
 			wp_enqueue_script( 'google-recaptcha', 'https://www.google.com/recaptcha/api.js', array(), null, true );
 		}
 
-		if ( 'recaptcha_v3' === $provider && $settings['recaptcha_v3_site'] ) {
+		if ( 'recaptcha_v3' === $provider ) {
 			wp_enqueue_script(
 				'google-recaptcha-v3',
 				'https://www.google.com/recaptcha/api.js?render=' . rawurlencode( $settings['recaptcha_v3_site'] ),
@@ -49,7 +53,7 @@ class WB_Spam {
 			);
 		}
 
-		if ( 'turnstile' === $provider && $settings['turnstile_site'] ) {
+		if ( 'turnstile' === $provider ) {
 			wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 		}
 	}
@@ -86,7 +90,7 @@ class WB_Spam {
 			}
 		}
 
-		if ( 'none' !== $settings['captcha_provider'] ) {
+		if ( wb_is_captcha_configured( $settings ) ) {
 			$captcha_error = self::validate_captcha( $settings );
 			if ( $captcha_error ) {
 				$errors[] = $captcha_error;
@@ -201,17 +205,21 @@ class WB_Spam {
 	 */
 	public static function render_captcha_field() {
 		$settings = WB_Settings::get();
+		if ( ! wb_is_captcha_configured( $settings ) ) {
+			return '';
+		}
+
 		$provider = $settings['captcha_provider'];
 
-		if ( 'recaptcha_v2' === $provider && $settings['recaptcha_v2_site'] ) {
+		if ( 'recaptcha_v2' === $provider ) {
 			return '<div class="g-recaptcha" data-sitekey="' . esc_attr( $settings['recaptcha_v2_site'] ) . '"></div>';
 		}
 
-		if ( 'turnstile' === $provider && $settings['turnstile_site'] ) {
+		if ( 'turnstile' === $provider ) {
 			return '<div class="cf-turnstile" data-sitekey="' . esc_attr( $settings['turnstile_site'] ) . '"></div>';
 		}
 
-		if ( 'recaptcha_v3' === $provider && $settings['recaptcha_v3_site'] ) {
+		if ( 'recaptcha_v3' === $provider ) {
 			return '<input type="hidden" name="wb_recaptcha_token" id="wb_recaptcha_token" value="">';
 		}
 

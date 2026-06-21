@@ -335,7 +335,7 @@ class WB_Privacy {
 	public static function privacy_policy_text() {
 		$settings = WB_Settings::get();
 		$months   = (int) $settings['retention_months'];
-		$captcha  = $settings['captcha_provider'];
+		$captcha  = wb_is_captcha_configured( $settings ) ? $settings['captcha_provider'] : 'none';
 
 		$lines = array(
 			'<h2>' . esc_html__( 'Withdrawal requests', WB_TEXT_DOMAIN ) . '</h2>',

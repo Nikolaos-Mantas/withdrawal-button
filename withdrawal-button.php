@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Withdrawal Button
  * Description: Withdrawal request form with admin management and email notifications. Shortcode: [withdrawal_form]
- * Version:     3.2.1
+ * Version:     3.2.2
  * Author:      Nikolaos Mantas
  * Author URI:  https://nmantas.eu
  * Plugin URI:  https://github.com/Nikolaos-Mantas/withdrawal-button
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WB_VERSION', '3.2.1' );
+define( 'WB_VERSION', '3.2.2' );
 define( 'WB_TEXT_DOMAIN', 'withdrawal-button' );
 define( 'WB_PLUGIN_SLUG', 'withdrawal-button' );
 define( 'WB_FILE', __FILE__ );

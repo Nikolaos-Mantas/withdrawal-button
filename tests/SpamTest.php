@@ -61,4 +61,50 @@ class WB_SpamTest extends TestCase {
 		$key = 'wb_rate_' . md5( wb_get_ip() );
 		$this->assertSame( 1, (int) get_transient( $key ) );
 	}
+
+	public function test_captcha_without_keys_is_not_active() {
+		wb_test_reset(
+			array(
+				'honeypot_enabled'   => 0,
+				'time_trap_enabled'  => 0,
+				'rate_limit_enabled' => 0,
+				'captcha_provider'   => 'recaptcha_v2',
+				'recaptcha_v2_site'  => '',
+				'recaptcha_v2_secret'=> '',
+			)
+		);
+
+		$this->assertFalse( wb_is_captcha_configured() );
+		$this->assertSame( '', WB_Spam::render_captcha_field() );
+		$this->assertSame( array(), WB_Spam::validate() );
+	}
+
+	public function test_captcha_requires_both_keys() {
+		wb_test_reset(
+			array(
+				'captcha_provider'    => 'turnstile',
+				'turnstile_site'      => 'site-key',
+				'turnstile_secret'    => 'secret-key',
+			)
+		);
+
+		$this->assertTrue( wb_is_captcha_configured() );
+	}
+
+	public function test_sanitize_resets_captcha_without_keys() {
+		wb_test_reset(
+			array(
+				'captcha_provider' => 'recaptcha_v3',
+			)
+		);
+
+		$result = WB_Settings::sanitize(
+			array(
+				'wb_settings_tab' => 'security',
+				'captcha_provider' => 'recaptcha_v3',
+			)
+		);
+
+		$this->assertSame( 'none', $result['captcha_provider'] );
+	}
 }

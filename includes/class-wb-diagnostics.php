@@ -171,19 +171,12 @@ class WB_Diagnostics {
 			! empty( $settings['rate_limit_enabled'] )
 		);
 
-		$captcha_ok = 'none' !== $settings['captcha_provider'];
-		if ( 'recaptcha_v2' === $settings['captcha_provider'] ) {
-			$captcha_ok = $settings['recaptcha_v2_site'] && $settings['recaptcha_v2_secret'];
-		} elseif ( 'recaptcha_v3' === $settings['captcha_provider'] ) {
-			$captcha_ok = $settings['recaptcha_v3_site'] && $settings['recaptcha_v3_secret'];
-		} elseif ( 'turnstile' === $settings['captcha_provider'] ) {
-			$captcha_ok = $settings['turnstile_site'] && $settings['turnstile_secret'];
-		}
+		$captcha_ok = wb_is_captcha_configured( $settings );
 
 		$checks[] = self::security_check(
 			__( 'Captcha configured', WB_TEXT_DOMAIN ),
 			$captcha_ok,
-			'none' === $settings['captcha_provider'] ? __( 'Optional — captcha is disabled.', WB_TEXT_DOMAIN ) : ''
+			! $captcha_ok ? __( 'Optional — captcha is disabled.', WB_TEXT_DOMAIN ) : ''
 		);
 
 		$checks[] = self::security_check(

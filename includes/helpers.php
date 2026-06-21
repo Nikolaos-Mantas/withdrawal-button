@@ -225,6 +225,47 @@ function wb_table_name() {
 }
 
 /**
+ * Whether captcha provider has both site and secret keys configured.
+ *
+ * @param array<string, mixed>|null $settings Settings.
+ * @return bool
+ */
+function wb_is_captcha_configured( $settings = null ) {
+	if ( null === $settings ) {
+		$settings = WB_Settings::get();
+	}
+
+	$provider = $settings['captcha_provider'] ?? 'none';
+	if ( 'none' === $provider ) {
+		return false;
+	}
+
+	switch ( $provider ) {
+		case 'recaptcha_v2':
+			return ! empty( $settings['recaptcha_v2_site'] ) && ! empty( $settings['recaptcha_v2_secret'] );
+		case 'recaptcha_v3':
+			return ! empty( $settings['recaptcha_v3_site'] ) && ! empty( $settings['recaptcha_v3_secret'] );
+		case 'turnstile':
+			return ! empty( $settings['turnstile_site'] ) && ! empty( $settings['turnstile_secret'] );
+	}
+
+	return false;
+}
+
+/**
+ * Disable captcha provider when keys are incomplete.
+ *
+ * @param array<string, mixed> $settings Settings.
+ * @return array<string, mixed>
+ */
+function wb_normalize_captcha_settings( $settings ) {
+	if ( 'none' !== ( $settings['captcha_provider'] ?? 'none' ) && ! wb_is_captcha_configured( $settings ) ) {
+		$settings['captcha_provider'] = 'none';
+	}
+	return $settings;
+}
+
+/**
  * Plain copyright notice text.
  *
  * @return string

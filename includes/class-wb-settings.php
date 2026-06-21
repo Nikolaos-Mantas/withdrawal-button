@@ -15,7 +15,8 @@ class WB_Settings {
 	 * @return array<string, mixed>
 	 */
 	public static function get() {
-		return wp_parse_args( (array) get_option( 'wb_settings', array() ), self::defaults() );
+		$settings = wp_parse_args( (array) get_option( 'wb_settings', array() ), self::defaults() );
+		return wb_normalize_captcha_settings( $settings );
 	}
 
 	/**
@@ -229,6 +230,7 @@ class WB_Settings {
 			$out['recaptcha_v3_score']  = isset( $input['recaptcha_v3_score'] ) ? min( 1, max( 0, (float) $input['recaptcha_v3_score'] ) ) : $out['recaptcha_v3_score'];
 			$out['turnstile_site']      = isset( $input['turnstile_site'] ) ? sanitize_text_field( $input['turnstile_site'] ) : $out['turnstile_site'];
 			$out['turnstile_secret']    = isset( $input['turnstile_secret'] ) ? sanitize_text_field( $input['turnstile_secret'] ) : $out['turnstile_secret'];
+			$out                        = wb_normalize_captcha_settings( $out );
 		}
 
 		if ( 'woocommerce' === $tab ) {
