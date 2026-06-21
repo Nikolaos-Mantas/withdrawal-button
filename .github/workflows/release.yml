@@ -14,15 +14,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build plugin zip
+      - name: Build plugin zip (production files only)
         run: |
           mkdir -p build/withdrawal-button
           rsync -a \
             --exclude vendor \
             --exclude tests \
+            --exclude bin \
             --exclude .git \
             --exclude .github \
+            --exclude .gitignore \
             --exclude .phpunit.result.cache \
+            --exclude composer.json \
+            --exclude composer.lock \
+            --exclude phpunit.xml.dist \
             --exclude build \
             ./ build/withdrawal-button/
           cd build && zip -r withdrawal-button.zip withdrawal-button

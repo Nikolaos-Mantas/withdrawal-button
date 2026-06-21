@@ -1,7 +1,6 @@
 {
 	"name": "nikolaos-mantas/withdrawal-button",
 	"description": "WordPress withdrawal request form plugin",
-	"version": "3.0.0",
 	"type": "wordpress-plugin",
 	"license": "proprietary",
 	"authors": [

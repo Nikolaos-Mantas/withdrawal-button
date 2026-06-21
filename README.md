@@ -49,6 +49,8 @@ wp wb logs --limit=50
 
 ## Development
 
+Source repo includes `tests/` and `bin/compile-translations.php` for contributors (no secrets). **Release zip** (`withdrawal-button.zip`) contains only plugin files for WordPress install — no tests, composer, or dev scripts.
+
 ```bash
 composer install
 composer test
