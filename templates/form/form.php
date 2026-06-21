@@ -7,7 +7,6 @@
  * @var array<int, string>         $errors
  * @var array<int, string>         $stores
  * @var string                     $captcha
- * @var bool                       $captcha_defer
  * @var string                     $data_notice
  */
 
@@ -88,12 +87,7 @@ if ( $errors ) {
 	</div>
 
 	<?php if ( $captcha ) : ?>
-		<div class="wb-captcha<?php echo $captcha_defer ? ' wb-captcha-pending' : ''; ?>" id="wb-captcha-wrap" data-defer="<?php echo $captcha_defer ? '1' : '0'; ?>">
-			<?php if ( $captcha_defer ) : ?>
-				<p class="wb-captcha-hint description"><?php esc_html_e( 'Anti-spam verification loads after you accept the Privacy Policy.', WB_TEXT_DOMAIN ); ?></p>
-			<?php endif; ?>
-			<div class="wb-captcha-field"><?php echo $captcha; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
-		</div>
+		<div class="wb-captcha"><?php echo $captcha; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 	<?php endif; ?>
 
 	<button type="submit" class="wb-btn"><?php esc_html_e( 'Continue to Confirmation', WB_TEXT_DOMAIN ); ?></button>

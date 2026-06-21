@@ -8,7 +8,6 @@ class PrivacyTest extends TestCase {
 		$defaults = WB_Settings::defaults();
 		$this->assertSame( 1, $defaults['anonymize_ip'] );
 		$this->assertSame( 'delete', $defaults['retention_action'] );
-		$this->assertSame( 1, $defaults['captcha_require_privacy_consent'] );
 	}
 
 	public function test_consent_version_uses_plugin_version() {

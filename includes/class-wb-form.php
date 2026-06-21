@@ -46,20 +46,13 @@ class WB_Form {
 		wp_enqueue_script( 'wb-form', WB_URL . 'assets/js/form.js', array( 'jquery' ), WB_VERSION, true );
 
 		$settings = WB_Settings::get();
-		$captcha_defer = $settings['captcha_require_privacy_consent'] && 'none' !== $settings['captcha_provider'];
-
 		wp_localize_script( 'wb-form', 'wbForm', array(
 			'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
 			'recaptchaV3Key' => 'recaptcha_v3' === $settings['captcha_provider'] ? $settings['recaptcha_v3_site'] : '',
 			'wooAutofill'    => wb_is_woocommerce_enabled() && $settings['woo_autofill'],
-			'captchaDefer'   => $captcha_defer,
-			'captchaProvider'=> $settings['captcha_provider'],
-			'recaptchaV2Site'=> $settings['recaptcha_v2_site'],
-			'turnstileSite'  => $settings['turnstile_site'],
 			'i18n'           => array(
 				'orderFound' => __( 'Order found. Details were filled automatically.', WB_TEXT_DOMAIN ),
 				'orderError' => __( 'Could not find an order with this number.', WB_TEXT_DOMAIN ),
-				'acceptPrivacyForCaptcha' => __( 'Accept the Privacy Policy to enable anti-spam verification.', WB_TEXT_DOMAIN ),
 			),
 		) );
 
@@ -187,13 +180,12 @@ class WB_Form {
 		}
 
 		echo wb_render_template( 'form/form.php', array(
-			'settings'      => $settings,
-			'fields'        => $fields,
-			'errors'        => $errors,
-			'stores'        => wb_get_stores(),
-			'captcha'       => WB_Spam::render_captcha_field(),
-			'captcha_defer' => $settings['captcha_require_privacy_consent'] && 'none' !== $settings['captcha_provider'],
-			'data_notice'   => WB_Privacy::form_data_notice(),
+			'settings'    => $settings,
+			'fields'      => $fields,
+			'errors'      => $errors,
+			'stores'      => wb_get_stores(),
+			'captcha'     => WB_Spam::render_captcha_field(),
+			'data_notice' => WB_Privacy::form_data_notice(),
 		) );
 	}
 

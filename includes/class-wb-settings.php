@@ -107,7 +107,6 @@ class WB_Settings {
 			'recaptcha_v3_score'   => 0.5,
 			'turnstile_site'       => '',
 			'turnstile_secret'     => '',
-			'captcha_require_privacy_consent' => 1,
 
 			// WooCommerce.
 			'woo_enabled'              => 0,
@@ -230,7 +229,6 @@ class WB_Settings {
 			$out['recaptcha_v3_score']  = isset( $input['recaptcha_v3_score'] ) ? min( 1, max( 0, (float) $input['recaptcha_v3_score'] ) ) : $out['recaptcha_v3_score'];
 			$out['turnstile_site']      = isset( $input['turnstile_site'] ) ? sanitize_text_field( $input['turnstile_site'] ) : $out['turnstile_site'];
 			$out['turnstile_secret']    = isset( $input['turnstile_secret'] ) ? sanitize_text_field( $input['turnstile_secret'] ) : $out['turnstile_secret'];
-			$out['captcha_require_privacy_consent'] = empty( $input['captcha_require_privacy_consent'] ) ? 0 : 1;
 		}
 
 		if ( 'woocommerce' === $tab ) {

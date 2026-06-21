@@ -4,7 +4,7 @@ WordPress plugin for customer withdrawal requests: form, admin list, emails, opt
 
 **Author:** Nikolaos Mantas — [nmantas.eu](https://nmantas.eu) — info@nmantas.eu  
 **Repository:** [github.com/Nikolaos-Mantas/withdrawal-button](https://github.com/Nikolaos-Mantas/withdrawal-button)  
-**Version:** 3.2.0 · **Requires:** WordPress 5.8+, PHP 8.1+
+**Version:** 3.2.1 · **Requires:** WordPress 5.8+, PHP 8.1+
 
 ## Install
 

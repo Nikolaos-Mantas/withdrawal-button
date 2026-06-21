@@ -24,14 +24,7 @@ class WB_Spam {
 			return;
 		}
 
-		$settings = WB_Settings::get();
-		$provider = $settings['captcha_provider'];
-
-		if ( $settings['captcha_require_privacy_consent'] && 'none' !== $provider ) {
-			return;
-		}
-
-		self::enqueue_captcha_scripts( $settings );
+		self::enqueue_captcha_scripts( WB_Settings::get() );
 	}
 
 	/**

@@ -362,7 +362,7 @@ class WB_Privacy {
 		}
 
 		if ( 'none' !== $captcha ) {
-			$lines[] = '<p>' . esc_html__( 'Anti-spam protection may use third-party services (Google reCAPTCHA or Cloudflare Turnstile) that may process your IP address. Scripts are loaded only after you accept the privacy policy when that option is enabled.', WB_TEXT_DOMAIN ) . '</p>';
+			$lines[] = '<p>' . esc_html__( 'Anti-spam protection may use third-party services (Google reCAPTCHA or Cloudflare Turnstile) that process IP addresses for security.', WB_TEXT_DOMAIN ) . '</p>';
 		}
 
 		$lines[] = '<p>' . esc_html__( 'You may request export or erasure of your data via the site administrator or WordPress privacy tools where available.', WB_TEXT_DOMAIN ) . '</p>';
