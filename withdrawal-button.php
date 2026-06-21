@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Withdrawal Button
  * Description: Withdrawal request form with admin management and email notifications. Shortcode: [withdrawal_form]
- * Version:     3.0.0
+ * Version:     3.1.0
  * Author:      Nikolaos Mantas
  * Author URI:  https://nmantas.eu
  * Plugin URI:  https://github.com/Nikolaos-Mantas/withdrawal-button
@@ -10,14 +10,14 @@
  * Text Domain: withdrawal-button
  * Domain Path: /languages
  * Requires at least: 5.8
- * Requires PHP: 7.4
+ * Requires PHP: 8.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WB_VERSION', '3.0.0' );
+define( 'WB_VERSION', '3.1.0' );
 define( 'WB_TEXT_DOMAIN', 'withdrawal-button' );
 define( 'WB_PLUGIN_SLUG', 'withdrawal-button' );
 define( 'WB_FILE', __FILE__ );

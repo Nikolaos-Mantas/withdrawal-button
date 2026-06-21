@@ -4,7 +4,7 @@
  */
 
 define( 'ABSPATH', __DIR__ . '/../' );
-define( 'WB_VERSION', '3.0.0' );
+define( 'WB_VERSION', '3.1.0' );
 define( 'WB_TEXT_DOMAIN', 'withdrawal-button' );
 define( 'WB_PLUGIN_SLUG', 'withdrawal-button' );
 define( 'WB_FILE', dirname( __DIR__ ) . '/withdrawal-button.php' );
